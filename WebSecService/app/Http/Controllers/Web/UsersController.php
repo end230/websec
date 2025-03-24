@@ -96,6 +96,26 @@ class UsersController extends Controller {
         return view('users.profile', compact('user', 'permissions'));
     }
 
+    public function add(Request $request, User $user = null)    {
+        // $user = $user??auth()->user();
+        // if(auth()->id()!=$user?->id) {
+        //     if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
+        // }
+        // $roles = [];
+        // foreach(Role::all() as $role) {
+        //     $role->taken = ($user->hasRole($role->name));
+        //     $roles[] = $role;
+        // }
+        // $permissions = [];
+        // $directPermissionsIds = $user->permissions()->pluck('id')->toArray();
+        // foreach(Permission::all() as $permission) {
+        //     $permission->taken = in_array($permission->id, $directPermissionsIds);
+        //     $permissions[] = $permission;
+        // }      
+
+        return view('users.add');
+
+    }
     public function edit(Request $request, User $user = null) {
    
         $user = $user??auth()->user();
