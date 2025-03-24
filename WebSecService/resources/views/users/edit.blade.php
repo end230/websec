@@ -34,7 +34,7 @@ $(document).ready(function(){
                     @foreach($roles as $role)
                     <option value='{{$role->name}}' {{$role->taken?'selected':''}}>
                         {{$role->name}}
-                    </option>
+                    </option> 
                     @endforeach
                 </select>
             </div>

@@ -42,6 +42,7 @@
         <div class="col col-sm-1">
             <button type="reset" class="btn btn-danger">Reset</button>
         </div>
+      
     </div>
 </form>
 
@@ -68,6 +69,9 @@
 					        <a href="{{route('products_delete', $product->id)}}" class="btn btn-danger form-control">Delete</a>
                             @endcan
 					    </div>
+                        <div class="col col-sm-1">
+                            <button type="Add" class="btn btn-primary">Buy</button>
+                        </div>
 					</div>
 
                     <table class="table table-striped">
