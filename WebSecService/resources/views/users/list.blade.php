@@ -18,9 +18,8 @@
             <button type="reset" class="btn btn-danger">Reset</button>
         </div>
         <div class="col col-sm-1">
-          <button type="Add" class="btn btn-primary">Add</button>
-      </div>
-  
+            <a href="{{ route('user_add') }}" class="btn btn-success">Add</a>
+        </div>
     </div>
 </form>
 

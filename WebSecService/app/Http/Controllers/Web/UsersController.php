@@ -96,26 +96,24 @@ class UsersController extends Controller {
         return view('users.profile', compact('user', 'permissions'));
     }
 
-    public function add(Request $request, User $user = null)    {
-        // $user = $user??auth()->user();
-        // if(auth()->id()!=$user?->id) {
-        //     if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
-        // }
-        // $roles = [];
-        // foreach(Role::all() as $role) {
-        //     $role->taken = ($user->hasRole($role->name));
-        //     $roles[] = $role;
-        // }
-        // $permissions = [];
-        // $directPermissionsIds = $user->permissions()->pluck('id')->toArray();
-        // foreach(Permission::all() as $permission) {
-        //     $permission->taken = in_array($permission->id, $directPermissionsIds);
-        //     $permissions[] = $permission;
-        // }      
+    public function add(Request $request)
+    {
+        if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
 
-        return view('users.add');
+        $roles = Role::all();
+        foreach($roles as $role) {
+            $role->taken = false;
+        }
 
+        $permissions = Permission::all();
+        foreach($permissions as $permission) {
+            $permission->taken = false;
+            $permission->display_name = ucwords(str_replace('_', ' ', $permission->name));
+        }
+
+        return view('users.add', compact('roles', 'permissions'));
     }
+
     public function edit(Request $request, User $user = null) {
    
         $user = $user??auth()->user();
@@ -204,5 +202,34 @@ class UsersController extends Controller {
         $user->save();
 
         return redirect(route('profile', ['user'=>$user->id]));
+    }
+
+    public function store(Request $request)
+    {
+        if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
+
+        $this->validate($request, [
+            'name' => ['required', 'string', 'min:5'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'confirmed', Password::min(8)->numbers()->letters()->mixedCase()->symbols()],
+            'roles' => ['nullable', 'array'],
+            'permissions' => ['nullable', 'array']
+        ]);
+
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        if ($request->roles) {
+            $user->syncRoles($request->roles);
+        }
+
+        if ($request->permissions) {
+            $user->syncPermissions($request->permissions);
+        }
+
+        return redirect()->route('users')->with('success', 'User created successfully');
     }
 } 

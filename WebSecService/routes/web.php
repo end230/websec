@@ -13,6 +13,7 @@ Route::get('logout', [UsersController::class, 'doLogout'])->name('do_logout');
 Route::get('users', [UsersController::class, 'list'])->name('users');
 
 Route::get('users/add',[UsersController::class, 'add'])->name('user_add');
+Route::post('users/add',[UsersController::class, 'store'])->name('user_store');
 
 Route::get('profile/{user?}', [UsersController::class, 'profile'])->name('profile');
 Route::get('users/edit/{user?}', [UsersController::class, 'edit'])->name('users_edit');
