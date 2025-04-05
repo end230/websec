@@ -18,8 +18,17 @@ class UsersController extends Controller {
 	use ValidatesRequests;
 
     public function list(Request $request) {
-        if(!auth()->user()->hasPermissionTo('show_users'))abort(401);
+        if(!Auth::user()->hasPermissionTo('show_users')) abort(401);
+        
         $query = User::select('*');
+        
+        // If user is Employee, only show users with Customer role
+        if(Auth::user()->hasRole('Employee')) {
+            $query->whereHas('roles', function($q) {
+                $q->where('name', 'Customer');
+            });
+        }
+        
         $query->when($request->keywords, 
         fn($q)=> $q->where("name", "like", "%$request->keywords%"));
         $users = $query->get();
@@ -86,7 +95,7 @@ class UsersController extends Controller {
 
         $user = $user??auth()->user();
         if(auth()->id()!=$user->id) {
-            if(!auth()->user()->hasPermissionTo('show_users')) abort(401);
+            if(!Auth::user()->hasPermissionTo('show_users')) abort(401);
         }
 
         $permissions = [];
