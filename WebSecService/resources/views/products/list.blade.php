@@ -6,9 +6,9 @@
         <h1>Products</h1>
     </div>
     <div class="col col-2">
-        @can('add_products')
+        @if(auth()->check() && auth()->user()->hasAnyRole(['Admin', 'Employee']))
         <a href="{{route('products_edit')}}" class="btn btn-success form-control">Add Product</a>
-        @endcan
+        @endif
     </div>
 </div>
 <form>
@@ -60,14 +60,14 @@
 					        <h3>{{$product->name}}</h3>
 					    </div>
 					    <div class="col col-2">
-                            @can('edit_products')
+                            @if(auth()->check() && auth()->user()->hasAnyRole(['Admin', 'Employee']))
 					        <a href="{{route('products_edit', $product->id)}}" class="btn btn-success form-control">Edit</a>
-                            @endcan
+                            @endif
 					    </div>
 					    <div class="col col-2">
-                            @can('delete_products')
+                            @if(auth()->check() && auth()->user()->hasAnyRole(['Admin', 'Employee']))
 					        <a href="{{route('products_delete', $product->id)}}" class="btn btn-danger form-control">Delete</a>
-                            @endcan
+                            @endif
 					    </div>
                         <div class="col col-sm-1">
                             <button type="Add" class="btn btn-primary">Buy</button>

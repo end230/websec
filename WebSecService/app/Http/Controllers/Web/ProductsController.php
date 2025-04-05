@@ -40,7 +40,9 @@ class ProductsController extends Controller {
 
 	public function edit(Request $request, Product $product = null) {
 
-		if(!auth()->user()) return redirect('/');
+		if(!auth()->user() || !auth()->user()->hasAnyRole(['Admin', 'Employee'])) {
+			abort(401, 'Unauthorized');
+		}
 
 		$product = $product??new Product();
 
@@ -48,6 +50,10 @@ class ProductsController extends Controller {
 	}
 
 	public function save(Request $request, Product $product = null) {
+
+		if(!auth()->user() || !auth()->user()->hasAnyRole(['Admin', 'Employee'])) {
+			abort(401, 'Unauthorized');
+		}
 
 		$this->validate($request, [
 	        'code' => ['required', 'string', 'max:32'],
@@ -66,7 +72,9 @@ class ProductsController extends Controller {
 
 	public function delete(Request $request, Product $product) {
 
-		if(!auth()->user()->hasPermissionTo('delete_products')) abort(401);
+		if(!auth()->user() || !auth()->user()->hasAnyRole(['Admin', 'Employee'])) {
+			abort(401, 'Unauthorized');
+		}
 
 		$product->delete();
 
