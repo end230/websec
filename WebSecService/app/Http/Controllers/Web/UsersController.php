@@ -51,6 +51,12 @@ class UsersController extends Controller {
 	    $user->password = bcrypt($request->password); //Secure
 	    $user->save();
 
+        // Assign Customer role to the new user
+        $customerRole = Role::where('name', 'Customer')->first();
+        if ($customerRole) {
+            $user->assignRole($customerRole);
+        }
+
         return redirect('/');
     }
 
@@ -96,23 +102,7 @@ class UsersController extends Controller {
         return view('users.profile', compact('user', 'permissions'));
     }
 
-    public function add(Request $request)
-    {
-        if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
-
-        $roles = Role::all();
-        foreach($roles as $role) {
-            $role->taken = false;
-        }
-
-        $permissions = Permission::all();
-        foreach($permissions as $permission) {
-            $permission->taken = false;
-            $permission->display_name = ucwords(str_replace('_', ' ', $permission->name));
-        }
-
-        return view('users.add', compact('roles', 'permissions'));
-    }
+    
 
     public function edit(Request $request, User $user = null) {
    
@@ -204,6 +194,24 @@ class UsersController extends Controller {
         return redirect(route('profile', ['user'=>$user->id]));
     }
 
+    public function add(Request $request)
+    {
+        if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
+
+        $roles = Role::all();
+        foreach($roles as $role) {
+            $role->taken = false;
+        }
+
+        $permissions = Permission::all();
+        foreach($permissions as $permission) {
+            $permission->taken = false;
+            $permission->display_name = ucwords(str_replace('_', ' ', $permission->name));
+        }
+
+        return view('users.add', compact('roles', 'permissions'));
+    }
+    
     public function store(Request $request)
     {
         if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
