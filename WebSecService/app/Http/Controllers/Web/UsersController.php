@@ -205,8 +205,8 @@ class UsersController extends Controller {
 
     public function add(Request $request)
     {
-        if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
-
+        if(!Auth::user()->hasRole(['Admin', 'Employee'])) abort(401);
+        
         $roles = Role::all();
         foreach($roles as $role) {
             $role->taken = false;
@@ -223,7 +223,7 @@ class UsersController extends Controller {
     
     public function store(Request $request)
     {
-        if(!auth()->user()->hasPermissionTo('edit_users')) abort(401);
+        if(!Auth::user()->hasRole(['Admin', 'Employee'])) abort(401);
 
         $this->validate($request, [
             'name' => ['required', 'string', 'min:5'],
@@ -248,5 +248,25 @@ class UsersController extends Controller {
         }
 
         return redirect()->route('users')->with('success', 'User created successfully');
+    }
+
+    public function credit(Request $request, User $user)
+    {
+        if(!Auth::user()->hasRole(['Admin', 'Employee'])) abort(401);
+        return view('users.credit', compact('user'));
+    }
+
+    public function addCredit(Request $request, User $user)
+    {
+        if(!Auth::user()->hasRole(['Admin', 'Employee'])) abort(401);
+
+        $this->validate($request, [
+            'amount' => ['required', 'integer', 'min:1']
+        ]);
+
+        $user->credit = ($user->credit ?? 0) + $request->amount;
+        $user->save();
+
+        return redirect()->route('credit', $user->id)->with('success', 'Credits added successfully');
     }
 } 
