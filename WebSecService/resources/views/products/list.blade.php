@@ -6,8 +6,14 @@
         <h1>Products</h1>
     </div>
     <div class="col col-2">
+        @if(auth()->check())
+           <a href="{{ route('my_purchases') }}" class="btn btn-info">My Purchases</a>
+        @endif
+        </div>
+        <div class="col col-2">
+
         @if(auth()->check() && auth()->user()->hasAnyRole(['Admin', 'Employee']))
-        <a href="{{route('products_edit')}}" class="btn btn-success form-control">Add Product</a>
+            <a href="{{route('products_edit')}}" class="btn btn-success form-control">Add Product</a>
         @endif
     </div>
 </div>
@@ -70,7 +76,22 @@
                             @endif
 					    </div>
                         <div class="col col-sm-1">
-                            <button type="Add" class="btn btn-primary">Buy</button>
+                            @if(auth()->check())
+                                <form action="{{ route('products_buy', $product->id) }}" method="POST" style="display: inline;">
+                                    @csrf
+                                    <button type="submit" class="btn btn-primary" 
+                                        @if(!auth()->user()->credit || auth()->user()->credit < $product->price || $product->stock <= 0) 
+                                            disabled 
+                                        @endif>Buy</button>
+                                </form>
+                                @if(!auth()->user()->credit || auth()->user()->credit < $product->price)
+                                    <p class="text-danger">No enough credits</p>
+                                @elseif($product->stock <= 0)
+                                    <p class="text-danger">Out of stock</p>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Buy</a>
+                            @endif
                         </div>
 					</div>
 
@@ -78,7 +99,8 @@
                         <tr><th width="20%">Name</th><td>{{$product->name}}</td></tr>
                         <tr><th>Model</th><td>{{$product->model}}</td></tr>
                         <tr><th>Code</th><td>{{$product->code}}</td></tr>
-                        <tr><th>Price</th><td>{{$product->price}}</td>
+                        <tr><th>Price</th><td>{{$product->price}}</td></tr>
+                        <tr><th>Stock</th><td>{{$product->stock ?? 0}}</td></tr>
                         <tr><th>Description</th><td>{{$product->description}}</td></tr>
                     </table>
                 </div>

@@ -60,8 +60,8 @@ class UsersController extends Controller {
 	    $user->password = bcrypt($request->password); //Secure
 	    $user->save();
 
-        // Assign Customer role to the new user
         $customerRole = Role::where('name', 'Customer')->first();
+        // Assign Customer role to the new user
         if ($customerRole) {
             $user->assignRole($customerRole);
         }

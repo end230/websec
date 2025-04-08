@@ -7,6 +7,7 @@ use DB;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Purchase;
 
 class ProductsController extends Controller {
 
@@ -79,5 +80,61 @@ class ProductsController extends Controller {
 		$product->delete();
 
 		return redirect()->route('products_list');
+	}
+// buy function
+	public function buy(Request $request, Product $product)
+	{
+		if(!auth()->check()) {
+			return redirect()->route('login');
+		}
+
+		$user = auth()->user();
+
+		// Check if user has enough credits
+		if(!$user->credit || $user->credit < $product->price) {
+			return redirect()->back()->with('error', 'Not enough credits to buy this product');
+		}
+
+		// Check if product is in stock
+		if($product->stock <= 0) {
+			return redirect()->back()->with('error', 'Product is out of stock');
+		}
+
+		// Start transaction
+		DB::beginTransaction();
+		try {
+			// Deduct credits from user
+			$user->credit -= $product->price;
+			$user->save();
+
+			// Reduce product stock
+			$product->stock -= 1;
+			$product->save();
+
+			// Record the purchase
+			Purchase::create([
+				'user_id' => $user->id,
+				'product_id' => $product->id,
+				'price' => $product->price,
+				'purchased_at' => now()
+			]);
+
+			DB::commit();
+			return redirect()->back()->with('success', 'Product purchased successfully!');
+		} catch (\Exception $e) {
+			DB::rollBack();
+			return redirect()->back()->with('error', 'An error occurred during the purchase');
+		}
+	}
+
+	// purchases
+	public function myPurchases(Request $request)
+	{
+		if(!auth()->check()) {
+			return redirect()->route('login');
+		}
+
+		$purchases = auth()->user()->purchases()->with('product')->latest()->get();
+		return view('products.purchases', compact('purchases'));
 	}
 } 

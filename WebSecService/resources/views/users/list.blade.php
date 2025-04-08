@@ -58,6 +58,8 @@
 
           @elseif(auth()->user()->hasRole('Employee'))
             <a class="btn btn-primary" href='{{route('edit_password', [$user->id])}}'>Change Password</a>
+            <a class="btn btn-primary" href='{{route('credit', [$user->id])}}'>Credit</a>
+
           @endif
         </td>
       </tr>
