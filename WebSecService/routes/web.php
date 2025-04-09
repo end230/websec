@@ -33,6 +33,8 @@ Route::get('products/edit/{product?}', [ProductsController::class, 'edit'])->nam
 Route::post('products/save/{product?}', [ProductsController::class, 'save'])->name('products_save');
 Route::get('products/delete/{product}', [ProductsController::class, 'delete'])->name('products_delete');
 Route::post('products/buy/{product}', [ProductsController::class, 'buy'])->name('products_buy');
+Route::post('products/hold/{product}', [ProductsController::class, 'hold'])->name('products_hold');
+Route::post('products/unhold/{product}', [ProductsController::class, 'unhold'])->name('products_unhold');
 Route::get('products/my-purchases', [ProductsController::class, 'myPurchases'])->name('my_purchases');
 
 Route::get('/', function () {

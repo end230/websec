@@ -137,4 +137,28 @@ class ProductsController extends Controller {
 		$purchases = auth()->user()->purchases()->with('product')->latest()->get();
 		return view('products.purchases', compact('purchases'));
 	}
+
+	public function hold(Request $request, Product $product)
+	{
+		if(!auth()->user()->hasRole('Employee') ) {
+			abort(401, 'Unauthorized');
+		}
+
+		$product->hold = true;
+		$product->save();
+
+		return redirect()->back()->with('success', 'Product is now on hold.');
+	}
+
+	public function unhold(Request $request, Product $product)
+	{
+		if(!auth()->user()->hasRole('Employee')) {
+			abort(401, 'Unauthorized');
+		}
+
+		$product->hold = false;
+		$product->save();
+
+		return redirect()->back()->with('success', 'Product is now available.');
+	}
 } 

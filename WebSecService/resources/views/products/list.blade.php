@@ -75,19 +75,37 @@
 					        <a href="{{route('products_delete', $product->id)}}" class="btn btn-danger form-control">Delete</a>
                             @endif
 					    </div>
+                        <div class="col col-2">
+                            @if(auth()->check() && auth()->user()->hasAnyRole(['Employee']))
+                                @if($product->hold)
+                                    <form action="{{ route('products_unhold', $product->id) }}" method="POST" >
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">Unhold</button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('products_hold', $product->id) }}" method="POST" style=>
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">Hold</button>
+                                    </form>
+                                @endif
+                            @endif
+                        </div>
                         <div class="col col-sm-1">
-                            @if(auth()->check())
+                            @if(auth()->check() && auth()->user()->hasAnyRole(['Customer', 'Employee']))
                                 <form action="{{ route('products_buy', $product->id) }}" method="POST" style="display: inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-primary" 
-                                        @if(!auth()->user()->credit || auth()->user()->credit < $product->price || $product->stock <= 0) 
+                                        @if(!auth()->user()->credit || auth()->user()->credit < $product->price || $product->stock <= 0 || $product->hold) 
                                             disabled 
                                         @endif>Buy</button>
                                 </form>
+                                
                                 @if(!auth()->user()->credit || auth()->user()->credit < $product->price)
                                     <p class="text-danger">No enough credits</p>
                                 @elseif($product->stock <= 0)
                                     <p class="text-danger">Out of stock</p>
+                                @elseif($product->hold)
+                                    <p class="text-danger">Product is on hold</p>
                                 @endif
                             @else
                                 <a href="{{ route('login') }}" class="btn btn-primary">Login to Buy</a>
@@ -102,6 +120,7 @@
                         <tr><th>Price</th><td>{{$product->price}}</td></tr>
                         <tr><th>Stock</th><td>{{$product->stock ?? 0}}</td></tr>
                         <tr><th>Description</th><td>{{$product->description}}</td></tr>
+
                     </table>
                 </div>
             </div>
