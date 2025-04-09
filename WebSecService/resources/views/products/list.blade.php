@@ -76,22 +76,22 @@
                             @endif
 					    </div>
                         <div class="col col-2">
-                            @if(auth()->check() && auth()->user()->hasAnyRole(['Employee']))
+                            @if(auth()->check() && auth()->user()->hasAnyRole(['Employee','Admin']))
                                 @if($product->hold)
                                     <form action="{{ route('products_unhold', $product->id) }}" method="POST" >
                                         @csrf
-                                        <button type="submit" class="btn btn-primary">Unhold</button>
+                                        <button type="submit" class="btn btn-warning">Unhold</button>
                                     </form>
                                 @else
                                     <form action="{{ route('products_hold', $product->id) }}" method="POST" style=>
                                         @csrf
-                                        <button type="submit" class="btn btn-primary">Hold</button>
+                                        <button type="submit" class="btn btn-warning">Hold</button>
                                     </form>
                                 @endif
                             @endif
                         </div>
                         <div class="col col-sm-1">
-                            @if(auth()->check() && auth()->user()->hasAnyRole(['Customer', 'Employee']))
+                            @if(auth()->check() && auth()->user()->hasAnyRole(['Customer', 'Employee','Admin']))
                                 <form action="{{ route('products_buy', $product->id) }}" method="POST" style="display: inline;">
                                     @csrf
                                     <button type="submit" class="btn btn-primary" 

@@ -140,7 +140,7 @@ class ProductsController extends Controller {
 
 	public function hold(Request $request, Product $product)
 	{
-		if(!auth()->user()->hasRole('Employee') ) {
+		if(!auth()->user()->hasRole(['Employee','Admin']) ) {
 			abort(401, 'Unauthorized');
 		}
 
@@ -152,7 +152,7 @@ class ProductsController extends Controller {
 
 	public function unhold(Request $request, Product $product)
 	{
-		if(!auth()->user()->hasRole('Employee')) {
+		if(!auth()->user()->hasRole(['Employee','Admin'])) {
 			abort(401, 'Unauthorized');
 		}
 
