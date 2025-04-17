@@ -80,12 +80,12 @@
                                 @if($product->hold)
                                     <form action="{{ route('products_unhold', $product->id) }}" method="POST" >
                                         @csrf
-                                        <button type="submit" class="btn btn-warning">Unhold</button>
+                                        <button type="submit" class="btn btn-warning form-control">Unhold</button>
                                     </form>
                                 @else
                                     <form action="{{ route('products_hold', $product->id) }}" method="POST" style=>
                                         @csrf
-                                        <button type="submit" class="btn btn-warning">Hold</button>
+                                        <button type="submit" class="btn btn-warning form-control">Hold</button>
                                     </form>
                                 @endif
                             @endif
@@ -94,7 +94,7 @@
                             @if(auth()->check() && auth()->user()->hasAnyRole(['Customer', 'Employee','Admin']))
                                 <form action="{{ route('products_buy', $product->id) }}" method="POST" style="display: inline;">
                                     @csrf
-                                    <button type="submit" class="btn btn-primary" 
+                                    <button type="submit" class="btn btn-primary " 
                                         @if(!auth()->user()->credit || auth()->user()->credit < $product->price || $product->stock <= 0 || $product->hold) 
                                             disabled 
                                         @endif>Buy</button>
@@ -108,7 +108,7 @@
                                     <p class="text-danger">Product is on hold</p>
                                 @endif
                             @else
-                                <a href="{{ route('login') }}" class="btn btn-primary">Login to Buy</a>
+                                <a href="{{ route('login') }}" class="btn btn-primary ">Login to Buy</a>
                             @endif
                         </div>
 					</div>

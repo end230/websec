@@ -13,6 +13,10 @@ use Artisan;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VerificationEmail;
+use Carbon\Carbon;
 class UsersController extends Controller {
 
 	use ValidatesRequests;
@@ -66,6 +70,11 @@ class UsersController extends Controller {
             $user->assignRole($customerRole);
         }
 
+        $title = "Verification Link";
+        $token = Crypt::encryptString(json_encode(['id' => $user->id, 'email' => $user->email]));
+        $link = route("verify", ['token' => $token]);
+        Mail::to($user->email)->send(new VerificationEmail($link, $user->name));
+
         return redirect('/');
     }
 
@@ -80,6 +89,11 @@ class UsersController extends Controller {
 
         $user = User::where('email', $request->email)->first();
         Auth::setUser($user);
+
+        $user = User::where('email', $request->email)->first();
+        if(!$user->email_verified_at)
+         return redirect()->back()->withInput($request->input())
+        ->withErrors('Your email is not verified.');
 
         return redirect('/');
     }
@@ -269,4 +283,15 @@ class UsersController extends Controller {
 
         return redirect()->route('credit', $user->id)->with('success', 'Credits added successfully');
     }
+    public function verify(Request $request) {
+ 
+        $decryptedData = json_decode(Crypt::decryptString($request->token), true);
+        $user = User::find($decryptedData['id']);
+        if(!$user) abort(401);
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+        return view('users.verified', compact('user'));
+   }
 } 
+
+ 
