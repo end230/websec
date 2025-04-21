@@ -69,12 +69,11 @@ class UsersController extends Controller {
         if ($customerRole) {
             $user->assignRole($customerRole);
         }
-
         $title = "Verification Link";
         $token = Crypt::encryptString(json_encode(['id' => $user->id, 'email' => $user->email]));
         $link = route("verify", ['token' => $token]);
         Mail::to($user->email)->send(new VerificationEmail($link, $user->name));
-
+        Auth::logout();
         return redirect('/');
     }
 
