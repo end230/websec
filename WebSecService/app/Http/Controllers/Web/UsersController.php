@@ -81,21 +81,7 @@ class UsersController extends Controller {
         return view('users.login');
     }
 
-    public function doLogin(Request $request) {
-    	
-    	if(!Auth::attempt(['email' => $request->email, 'password' => $request->password]))
-            return redirect()->back()->withInput($request->input())->withErrors('Invalid login information.');
-
-        $user = User::where('email', $request->email)->first();
-        Auth::setUser($user);
-
-        $user = User::where('email', $request->email)->first();
-        if(!$user->email_verified_at)
-         return redirect()->back()->withInput($request->input())
-        ->withErrors('Your email is not verified.');
-
-        return redirect('/');
-    }
+    
 
     public function doLogout(Request $request) {
     	
