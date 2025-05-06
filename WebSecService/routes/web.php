@@ -44,6 +44,8 @@ Route::get('/sqli', function(Request $request){
     return redirect('/');
     });
 
+    
+
 Route::get('verify', [UsersController::class, 'verify'])->name('verify');
 
 Route::get('/', function () {

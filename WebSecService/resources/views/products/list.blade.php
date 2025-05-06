@@ -52,6 +52,14 @@
     </div>
 </form>
 
+<!-- To Allow Cross Site Scripting -->
+@if(!empty(request()->input('keywords')))
+    <div class="card mt-2">
+        <div class="card-body">
+            Search Results: <span>{!! request()->keywords !!}</span>
+        </div>
+    </div>
+@endif
 
 @foreach($products as $product)
     <div class="card mt-2">
