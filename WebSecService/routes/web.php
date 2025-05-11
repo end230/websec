@@ -74,5 +74,12 @@ Route::get('/cryptography', function (Request $request) {
     $action = $request->action??"Encrypt";
     $result = $request->result??"";
     $status = "Failed";
+    if($request->action=="Encrypt") {
+        $temp = openssl_encrypt($request->data, 'aes-128-ecb', 'thisisasecretkey', OPENSSL_RAW_DATA, '');
+        if($temp) {
+        $status = 'Encrypted Successfully';
+        $result = base64_encode($temp);
+        }    
+    }
     return view('cryptography', compact('data', 'result', 'action', 'status'));
-   })->name('cryptography');
+})->name('cryptography');
