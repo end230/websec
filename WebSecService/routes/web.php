@@ -69,3 +69,10 @@ Route::get('/prime', function () {
 Route::get('/test', function () {
     return view('test');
 });
+Route::get('/cryptography', function (Request $request) {
+    $data = $request->data??"Welcome to Cryptography";
+    $action = $request->action??"Encrypt";
+    $result = $request->result??"";
+    $status = "Failed";
+    return view('cryptography', compact('data', 'result', 'action', 'status'));
+   })->name('cryptography');
