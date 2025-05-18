@@ -14,4 +14,9 @@ class Product extends Model  {
         'photo',
         'stock'
     ];
+
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(User::class, 'favorites');
+    }
 }

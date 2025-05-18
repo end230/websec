@@ -36,6 +36,7 @@ Route::post('products/buy/{product}', [ProductsController::class, 'buy'])->name(
 Route::post('products/hold/{product}', [ProductsController::class, 'hold'])->name('products_hold');
 Route::post('products/unhold/{product}', [ProductsController::class, 'unhold'])->name('products_unhold');
 Route::get('products/my-purchases', [ProductsController::class, 'myPurchases'])->name('my_purchases');
+Route::post('products/toggle-favorite/{product}', [ProductsController::class, 'Favorite'])->name('products_toggle_favorite');
 
 // To Drop A Table (Vulerability - SQL Injection)
 Route::get('/sqli', function(Request $request){

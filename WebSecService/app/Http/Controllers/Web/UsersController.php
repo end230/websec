@@ -87,14 +87,14 @@ class UsersController extends Controller {
                 'email' => ['required', 'email'],
                 'password' => ['required']
             ]);
-
+    	
             if(!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
                 return redirect()->back()
                     ->withInput($request->input())
                     ->withErrors('Invalid login credentials.');
             }
 
-            $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
             
             if(!$user->email_verified_at) {
                 Auth::logout();
@@ -104,7 +104,7 @@ class UsersController extends Controller {
             }
 
             Auth::login($user);
-            return redirect('/');
+        return redirect('/');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput($request->input())
@@ -308,4 +308,3 @@ class UsersController extends Controller {
    }
 } 
 
- 

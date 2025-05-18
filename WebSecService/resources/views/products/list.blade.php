@@ -107,6 +107,7 @@
                                             disabled 
                                         @endif>Buy</button>
                                 </form>
+                        
                                 
                                 @if(!auth()->user()->credit || auth()->user()->credit < $product->price)
                                     <p class="text-danger">No enough credits</p>
@@ -119,6 +120,18 @@
                                 <a href="{{ route('login') }}" class="btn btn-primary ">Login to Buy</a>
                             @endif
                         </div>
+                        @if(auth()->check() && auth()->user()->hasPermissionTo('select_favourite'))
+                            <form action="{{ route('products_toggle_favorite', $product->id) }}" method="POST" style="display: inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-danger mt-1">
+                                    @if($product->favorite)
+                                        <i class="fas fa-heart"></i> Unmark as Favorite
+                                    @else
+                                        <i class="far fa-heart"></i> Mark as Favorite
+                                    @endif
+                                </button>
+                            </form>
+                        @endif
 					</div>
 
                     <table class="table table-striped">

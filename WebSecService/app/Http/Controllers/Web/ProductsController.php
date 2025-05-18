@@ -161,4 +161,16 @@ class ProductsController extends Controller {
 
 		return redirect()->back()->with('success', 'Product is now available.');
 	}
+
+
+
+	public function Favorite(Product $product)
+	{
+		if (!auth()->user()->hasPermissionTo('select_favourite')) {
+			abort(401, 'Unauthorized');
+		}
+		$product->favorite = !$product->favorite;
+		$product->save();
+		return redirect()->back()->with('success', 'Product favorite status updated.');
+	}
 } 
