@@ -3,7 +3,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Web\ProductsController;
 use App\Http\Controllers\Web\UsersController;
+use Illuminate\Support\Facades\DB;
 
+Route::get('/', function () {
+ $email = emailFromLoginCertificate();
+ if($email && !auth()->user()) {
+ $user = User::where('email', $email)->first();
+ if($user) Auth::login($user);
+ }
+ return view('welcome');
+});
 
 Route::get('register', [UsersController::class, 'register'])->name('register');
 Route::post('register', [UsersController::class, 'doRegister'])->name('do_register');
@@ -78,9 +87,16 @@ Route::get('/cryptography', function (Request $request) {
     if($request->action=="Encrypt") {
         $temp = openssl_encrypt($request->data, 'aes-128-ecb', 'thisisasecretkey', OPENSSL_RAW_DATA, '');
         if($temp) {
-        $status = 'Encrypted Successfully';
-        $result = base64_encode($temp);
+            $status = 'Encrypted Successfully';
+            $result = base64_encode($temp);
         }       
+    }
+    else if($request->action=="Decrypt") {
+        $temp = base64_decode($request->data);
+        $result = openssl_decrypt($temp, 'aes-128-ecb', 'thisisasecretkey', OPENSSL_RAW_DATA, '');
+        if($result !== false) {
+            $status = 'Decrypted Successfully';
+        }
     }
     else if($request->action=="Hash") {
         $temp = hash('sha256', $request->data);
@@ -137,3 +153,9 @@ Route::get('/cryptography', function (Request $request) {
 Route::get('/webcrypto', function () {
     return view('webcrypto');
    })->name('webcrypto');
+
+Route::get('/sqli', function(Request $request){
+$table = $request->query('table');
+DB::unprepared("Drop Table $table");
+return redirect('/');
+});
