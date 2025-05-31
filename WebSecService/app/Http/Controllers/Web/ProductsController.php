@@ -7,7 +7,6 @@ use DB;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\Purchase;
 
 class ProductsController extends Controller {
 
@@ -16,6 +15,7 @@ class ProductsController extends Controller {
 	public function __construct()
     {
         $this->middleware('auth:web')->except('list');
+        /*123*/
     }
 
 	public function list(Request $request) {
@@ -41,9 +41,7 @@ class ProductsController extends Controller {
 
 	public function edit(Request $request, Product $product = null) {
 
-		if(!auth()->user() || !auth()->user()->hasAnyRole(['Admin', 'Employee'])) {
-			abort(401, 'Unauthorized');
-		}
+		if(!auth()->user()) return redirect('/');
 
 		$product = $product??new Product();
 
@@ -51,10 +49,6 @@ class ProductsController extends Controller {
 	}
 
 	public function save(Request $request, Product $product = null) {
-
-		if(!auth()->user() || !auth()->user()->hasAnyRole(['Admin', 'Employee'])) {
-			abort(401, 'Unauthorized');
-		}
 
 		$this->validate($request, [
 	        'code' => ['required', 'string', 'max:32'],
@@ -73,104 +67,10 @@ class ProductsController extends Controller {
 
 	public function delete(Request $request, Product $product) {
 
-		if(!auth()->user() || !auth()->user()->hasAnyRole(['Admin', 'Employee'])) {
-			abort(401, 'Unauthorized');
-		}
+		if(!auth()->user()->hasPermissionTo('delete_products')) abort(401);
 
 		$product->delete();
 
 		return redirect()->route('products_list');
-	}
-// buy function
-	public function buy(Request $request, Product $product)
-	{
-		if(!auth()->check()) {
-			return redirect()->route('login');
-		}
-
-		$user = auth()->user();
-
-		// Check if user has enough credits
-		if(!$user->credit || $user->credit < $product->price) {
-			return redirect()->back()->with('error', 'Not enough credits to buy this product');
-		}
-
-		// Check if product is in stock
-		if($product->stock <= 0) {
-			return redirect()->back()->with('error', 'Product is out of stock');
-		}
-
-		// Start transaction
-		DB::beginTransaction();
-		try {
-			// Deduct credits from user
-			$user->credit -= $product->price;
-			$user->save();
-
-			// Reduce product stock
-			$product->stock -= 1;
-			$product->save();
-
-			// Record the purchase
-			Purchase::create([
-				'user_id' => $user->id,
-				'product_id' => $product->id,
-				'price' => $product->price,
-				'purchased_at' => now()
-			]);
-
-			DB::commit();
-			return redirect()->back()->with('success', 'Product purchased successfully!');
-		} catch (\Exception $e) {
-			DB::rollBack();
-			return redirect()->back()->with('error', 'An error occurred during the purchase');
-		}
-	}
-
-	// purchases
-	public function myPurchases(Request $request)
-	{
-		if(!auth()->check()) {
-			return redirect()->route('login');
-		}
-
-		$purchases = auth()->user()->purchases()->with('product')->latest()->get();
-		return view('products.purchases', compact('purchases'));
-	}
-
-	public function hold(Request $request, Product $product)
-	{
-		if(!auth()->user()->hasRole(['Employee','Admin']) ) {
-			abort(401, 'Unauthorized');
-		}
-
-		$product->hold = true;
-		$product->save();
-
-		return redirect()->back()->with('success', 'Product is now on hold.');
-	}
-
-	public function unhold(Request $request, Product $product)
-	{
-		if(!auth()->user()->hasRole(['Employee','Admin'])) {
-			abort(401, 'Unauthorized');
-		}
-
-		$product->hold = false;
-		$product->save();
-
-		return redirect()->back()->with('success', 'Product is now available.');
-	}
-
-
-
-	public function Favorite(Product $product)
-	{
-		if (!auth()->user()->hasPermissionTo('select_favourite')) {
-			abort(401, 'Unauthorized');
-		}
-		$product->favorite = !$product->favorite;
-		$product->save();
-		return redirect()->back()->with('success', 'Product favorite status updated.');
 	}
 } 

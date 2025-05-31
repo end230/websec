@@ -1,9 +1,8 @@
 @extends('layouts.master')
-@section('title', 'Prime Numbers')
+@section('title', 'Edit Product')
 @section('content')
 
 <form action="{{route('products_save', $product->id)}}" method="post">
-    {{ csrf_field() }}
     {{ csrf_field() }}
     @foreach($errors->all() as $error)
     <div class="alert alert-danger">
@@ -31,12 +30,6 @@
             <label for="model" class="form-label">Price:</label>
             <input type="numeric" class="form-control" placeholder="Price" name="price" required value="{{$product->price}}">
         </div>
-        <div class="col-6">
-            <label for="model" class="form-label">Stock:</label>
-            <input type="number" class="form-control" placeholder="Stock" name="stock" required value="{{$product->stock ?? 0}}">
-        </div>
-    </div>
-    <div class="row mb-2">
         <div class="col-6">
             <label for="model" class="form-label">Photo:</label>
             <input type="text" class="form-control" placeholder="Photo" name="photo" required value="{{$product->photo}}">

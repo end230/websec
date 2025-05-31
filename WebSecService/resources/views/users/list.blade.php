@@ -17,11 +17,6 @@
         <div class="col col-sm-1">
             <button type="reset" class="btn btn-danger">Reset</button>
         </div>
-        @if(auth()->user()->hasRole('Admin'))
-        <div class="col col-sm-1">
-            <a href="{{ route('user_add') }}" class="btn btn-success">Add</a>
-        </div>
-        @endif
     </div>
 </form>
 
@@ -34,7 +29,7 @@
           <th scope="col">Name</th>
           <th scope="col">Email</th>
           <th scope="col">Roles</th>
-          <th scope="col">Actions</th>
+          <th scope="col"></th>
         </tr>
       </thead>
       @foreach($users as $user)
@@ -48,19 +43,15 @@
           @endforeach
         </td>
         <td scope="col">
-          @if(auth()->user()->hasRole('Admin'))
-            <a class="btn btn-primary" href='{{route('users_edit', [$user->id])}}'>Edit</a>
-            <a class="btn btn-primary" href='{{route('edit_password', [$user->id])}}'>Change Password</a>
-            <a class="btn btn-primary" href='{{route('credit', [$user->id])}}'>Credit</a>
-            <a class="btn btn-danger" href='{{route('users_delete', [$user->id])}}'>Delete</a>
-            
-
-
-          @elseif(auth()->user()->hasRole('Employee'))
-            <a class="btn btn-primary" href='{{route('edit_password', [$user->id])}}'>Change Password</a>
-            <a class="btn btn-primary" href='{{route('credit', [$user->id])}}'>Credit</a>
-
-          @endif
+          @can('edit_users')
+          <a class="btn btn-primary" href='{{route('users_edit', [$user->id])}}'>Edit</a>
+          @endcan
+          @can('admin_users')
+          <a class="btn btn-primary" href='{{route('edit_password', [$user->id])}}'>Change Password</a>
+          @endcan
+          @can('delete_users')
+          <a class="btn btn-danger" href='{{route('users_delete', [$user->id])}}'>Delete</a>
+          @endcan
         </td>
       </tr>
       @endforeach
